@@ -24,6 +24,11 @@ const headerStyle = css`
   right: 0px;
   top: 0px;
   box-shadow: rgba(11, 37, 75, 0.08) 0px 1px 0px 0px;
+
+  /* Print styles */
+  @media print {
+    display: none;
+  }
 `;
 
 const headerSectionStyle = css`

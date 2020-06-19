@@ -1,4 +1,6 @@
+/** @jsxFrag React.Fragment */
 /** @jsx jsx */
+import React, { useState } from 'react';
 import { Global, css, jsx } from '@emotion/core';
 import upflowLogo from './upflow.svg';
 import heroImg from './hero-img.png';
@@ -12,25 +14,78 @@ import heroPicWebpLarge from './hero-pic-large.webp';
 // import side from './customer-logo-grey-side@2x.webp';
 // import triplebyte from './customer-logo-grey-triplebyte@2x.webp';
 // import trusk from './customer-logo-grey-trusk@2x.webp';
+import theme from './theme';
 
 const headerStyle = css`
   background: white;
   position: fixed;
-  z-index: 2;
+  z-index: ${theme.zIndexes.header};
   left: 0px;
   right: 0px;
   top: 0px;
   box-shadow: rgba(11, 37, 75, 0.08) 0px 1px 0px 0px;
+`;
 
-  > * {
+const headerSectionStyle = css`
+  padding: 0px ${theme.space[0]};
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: ${theme.zIndexes.section};
+  position: relative;
+  height: 90px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+  @media (min-width: ${theme.breakpoints.desktop}) {
     height: 120px;
-    display: flex;
-    justify-content: space-between;
+    flex-direction: row;
     align-items: center;
+  }
+
+  > button {
+    background: transparent;
+    border: 0;
+    font-size: 24px;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    cursor: pointer;
+
+    @media (min-width: ${theme.breakpoints.desktop}) {
+      display: none;
+    }
+
+    > span {
+      display: block;
+      width: 20px;
+      height: 45px;
+      line-height: 45px;
+    }
   }
 `;
 
-const navStyle = css`
+const headerLogo = css`
+  width: 76px;
+  height: 20px;
+  margin-top: 35px;
+  margin-bottom: 35px;
+
+  @media (min-width: ${theme.breakpoints.desktop}) {
+    width: 100px;
+    height: 26px;
+    margin: 0;
+  }
+`;
+
+const desktopNavStyle = css`
+  display: none;
+
+  @media (min-width: ${theme.breakpoints.desktop}) {
+    display: block;
+  }
+
   a {
     text-decoration: none;
     margin-right: 48px;
@@ -54,16 +109,54 @@ const navStyle = css`
   }
 `;
 
+const mobileNavStyle = (isMobileNavHidden) => css`
+  z-index: ${theme.zIndexes.header};
+  background: white;
+  display: ${isMobileNavHidden === true ? 'none' : 'flex'};
+  flex-direction: column;
+  margin-left: -${theme.space[0]};
+  margin-right: -${theme.space[0]};
+  padding: 0 ${theme.space[0]};
+  height: calc(100vh - 90px);
+
+  @media (min-width: ${theme.breakpoints.desktop}) {
+    display: none;
+  }
+
+  > a:not(:last-child) {
+    line-height: 65px;
+    border-bottom: 1px solid rgba(11, 37, 75, 0.1);
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: rgb(11, 37, 75);
+  }
+
+  > a:nth-last-child(2) {
+    margin-bottom: 30px;
+  }
+
+  > a:last-child {
+    margin-top: auto;
+    margin-bottom: 50px;
+  }
+`;
+
+const mobileNavIndentedItemStyle = css`
+  padding-left: 18px;
+`;
+
 const mainStyle = css`
   padding-top: 120px;
 `;
 
 const sectionStyle = css`
-  padding: 0px 40px;
+  padding: 0px ${theme.space[0]};
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
-  z-index: 1;
+  z-index: ${theme.zIndexes.section};
   position: relative;
 `;
 
@@ -121,7 +214,7 @@ const heroBackgroundStyle = css`
     rgb(255, 255, 255) 0%,
     rgb(244, 248, 255) 100%
   );
-  z-index: -1;
+  z-index: ${theme.zIndexes.background};
   top: 0px;
   bottom: 105px;
   left: -260px;
@@ -181,6 +274,7 @@ const buttonStyle = ({ size, color } = { color: 'default' }) => css`
 const arrowLinkStyle = css``;
 
 function App() {
+  const [isMobileNavHidden, setIsMobileNavHidden] = useState(true);
   return (
     <div>
       <Global
@@ -202,15 +296,42 @@ function App() {
       />
 
       <header css={headerStyle}>
-        <div css={sectionStyle}>
-          <img src={upflowLogo} alt="Upflow Logo" />
-          <nav css={navStyle}>
+        <div css={headerSectionStyle}>
+          <img src={upflowLogo} css={headerLogo} alt="Upflow Logo" />
+          <nav css={desktopNavStyle}>
             <a href="#a">Explore demo now</a>
             <a href="#a">Features</a>
             <a href="#a">Pricing</a>
             <a href="#a">Blog</a>
             <a href="#a">Login</a>
             <a href="#a" css={buttonStyle()}>
+              Create a free account
+            </a>
+          </nav>
+          <button onClick={() => setIsMobileNavHidden(!isMobileNavHidden)}>
+            <span>
+              {isMobileNavHidden === true ? (
+                '☰'
+              ) : (
+                <span style={{ fontSize: '1.5em' }}>&times;</span>
+              )}
+            </span>
+          </button>
+          <nav css={mobileNavStyle(isMobileNavHidden)}>
+            <a href="#a">Features</a>
+            <a href="#a" css={mobileNavIndentedItemStyle}>
+              Cash collection
+            </a>
+            <a href="#a" css={mobileNavIndentedItemStyle}>
+              Insights
+            </a>
+            <a href="#a" css={mobileNavIndentedItemStyle}>
+              Payment
+            </a>
+            <a href="#a">Pricing</a>
+            <a href="#a">Blog</a>
+            <a href="#a">Login</a>
+            <a href="#a" css={buttonStyle({ size: 'large', color: 'primary' })}>
               Create a free account
             </a>
           </nav>
